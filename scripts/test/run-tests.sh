@@ -23,6 +23,7 @@ failedTests=()
 failCount=0
 
 # Copy TestProjects to $TEST_BIN_ROOT
+rm -rf "$TEST_BIN_ROOT/TestProjects"
 mkdir -p "$TEST_BIN_ROOT/TestProjects"
 cp -a $REPOROOT/test/TestProjects/* $TEST_BIN_ROOT/TestProjects
 

@@ -26,6 +26,7 @@ foreach {
 popd
 
 # copy TestProjects to $TestBinRoot
+rd -Rec -Force "$TestBinRoot\TestProjects"
 mkdir -Force "$TestBinRoot\TestProjects"
 cp -rec -Force "$RepoRoot\test\TestProjects\*" "$TestBinRoot\TestProjects"
 

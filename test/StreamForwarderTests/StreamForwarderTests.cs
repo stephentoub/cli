@@ -10,11 +10,14 @@ using Xunit;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.Tools.Test.Utilities;
+using FluentAssertions;
 
 namespace StreamForwarderTests
 {
-    public class StreamForwarderTests
+    public class StreamForwarderTests : TestBase
     {
+        private string _testProjectsRoot = @"TestProjects";
+
         public static void Main()
         {
             Console.WriteLine("Dummy Entrypoint");
@@ -64,6 +67,37 @@ namespace StreamForwarderTests
             Forward(4, false, "123\n", "123\n");
             Forward(4, false, "1234\n", "1234\n");
             Forward(3, false, "\n23456\n89", "\n", "23456\n", "89\n");
+        }
+
+        [Fact]
+        public void TestOutputBeforeUnhandledException()
+        {
+            var root = Temp.CreateDirectory();
+            var testOutputDirectory = root.CreateDirectory("TestOutput").Path;
+            var testDirectory = root.CopyDirectory(Path.Combine(_testProjectsRoot, "TestAppThrowUnhandledException"));
+
+            var publishCommand = new PublishCommand(Path.Combine(testDirectory.Path, "project.json"), output:testOutputDirectory);
+            publishCommand.ExecuteWithCapturedOutput().Should().Pass();
+
+            var outputExecutable = Path.Combine(testOutputDirectory, "dotnet-unhandled" + Constants.ExeSuffix);
+
+            var oldDirectory = Directory.GetCurrentDirectory();
+            Directory.SetCurrentDirectory(testOutputDirectory);
+            var testCommand = new TestCommand("dotnet");
+            var testCommandResult = testCommand.ExecuteWithCapturedOutput("unhandled");
+            Directory.SetCurrentDirectory(oldDirectory);
+
+            // todo will this be in stderr?
+            var output = testCommandResult.StdOut;
+            var outputLines = output.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+            Console.WriteLine(output);
+
+            outputLines.Length.Should().Be(5);
+            outputLines[0].Should().Be("** 1 WriteLine **");
+            outputLines[1].Should().Be("** 2 Write **** 3 Write **** 4 WriteLine **");
+            outputLines[2].Should().Be("** 5 Write **");
+            outputLines[3].Should().Be("Unhandled Exception: System.Exception: ** Unhandled Exception **");
+            // Last line can be ignored
         }
 
         private static void Forward(int bufferSize, bool unbuffered, string str, params string[] expectedWrites)
