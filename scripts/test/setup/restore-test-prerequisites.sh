@@ -16,9 +16,13 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 source "$DIR/../../common/_common.sh"
 
-header "Restoring packages"
-dotnet restore "$REPOROOT/test/TestPackages" --runtime $RID --quiet $DISABLE_PARALLEL
+if [ ! -z "$OFFLINE" ]; then
+    info "Skipping Test Prerequisite Package Restore: Offline build"
+else
+    header "Restoring Test Prerequisite packages"
+    dotnet restore "$REPOROOT/test/TestPackages" --runtime $RID --quiet $DISABLE_PARALLEL
 
-set +e
-dotnet restore "$REPOROOT/testapp" --runtime $RID  $DISABLE_PARALLEL >/dev/null 2>&1
-set -e
+    set +e
+    dotnet restore "$REPOROOT/testapp" --runtime $RID  $DISABLE_PARALLEL >/dev/null 2>&1
+    set -e
+fi

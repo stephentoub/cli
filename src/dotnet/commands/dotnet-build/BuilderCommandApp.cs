@@ -1,11 +1,11 @@
 // Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.DotNet.Tools.Compiler;
+using Microsoft.DotNet.Tools.Compiler.Native;
 
 namespace Microsoft.DotNet.Tools.Build
 {
-    internal class BuilderCommandApp : CompilerCommandApp
+    internal class BuilderCommandApp : NativeCompilerCommandApp
     {
         public const string BuildProfileFlag = "--build-profile";
         public const string ForceUnsafeFlag = "--no-incremental";

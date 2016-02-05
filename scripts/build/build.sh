@@ -33,16 +33,18 @@ then
     ulimit -n 1024
 fi
 
-header "Restoring Tools and Packages"
+header "Restoring Tools"
 
 if [ ! -z "$OFFLINE" ]; then
-    info "Skipping Tools and Package Download: Offline build"
+    info "Skipping Tools Download: Offline build"
 else
    $REPOROOT/scripts/obtain/install-tools.sh
-
-   # Restore using the stage 0
-   PATH="$REPOROOT/.dotnet_stage0/$RID/bin:$PATH" $REPOROOT/scripts/build/restore-packages.sh
 fi
+
+PATH="$REPOROOT/.dotnet_stage0/$RID/bin:$PATH"
+
+# Restore using the stage 0
+$REPOROOT/scripts/build/restore-packages.sh
 
 header "Compiling"
 $REPOROOT/scripts/compile/compile.sh

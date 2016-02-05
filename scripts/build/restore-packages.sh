@@ -18,6 +18,7 @@ source "$DIR/../common/_common.sh"
 
 if [ ! -z "$CI_BUILD" ]; then
 	# periodically clear out the package cache on the CI server
+
 	PackageCacheFile="$NUGET_PACKAGES/packageCacheTime.txt"
 	if [ ! -f $PackageCacheFile ]; then
 		date > $PackageCacheFile
@@ -36,7 +37,12 @@ if [ ! -z "$CI_BUILD" ]; then
 	fi
 fi
 
-header "Restoring packages"
+if [ ! -z "$OFFLINE" ]; then
+    info "Skipping Package Restore: Offline build"
+else
+    header "Restoring packages"
 
-dotnet restore "$REPOROOT/src" --runtime "$RID" $DISABLE_PARALLEL
-dotnet restore "$REPOROOT/tools" --runtime "$RID" $DISABLE_PARALLEL
+    dotnet restore "$REPOROOT/src" --runtime "$RID" $DISABLE_PARALLEL
+    dotnet restore "$REPOROOT/tools" --runtime "$RID" $DISABLE_PARALLEL
+fi
+

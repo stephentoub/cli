@@ -27,8 +27,11 @@ if ($env:CI_BUILD -eq "1") {
 }
 
 # Restore packages
-# NOTE(anurse): I had to remove --quiet, because NuGet3 is too quiet when that's provided :(
-header "Restoring packages"
-
-& dotnet restore "$RepoRoot\src" --runtime "$Rid"
-& dotnet restore "$RepoRoot\tools" --runtime "$Rid"
+if ($Offline){
+    header "Skipping product package restore"
+}
+else {
+    header "Restoring product packages"
+    & dotnet restore "$RepoRoot\src" --runtime "$Rid"
+    & dotnet restore "$RepoRoot\tools" --runtime "$Rid"
+}

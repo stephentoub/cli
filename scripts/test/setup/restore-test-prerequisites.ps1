@@ -5,10 +5,17 @@
 
 ". $PSScriptRoot\..\..\common\_common.ps1"
 
-header "Restoring packages"
-& dotnet restore "$RepoRoot\test\TestPackages" --quiet --runtime "$Rid"
+# Restore packages
+if ($Offline){
+    header "Skipping test prerequisite package restore"
+}
+else {
+    header "Restoring test prerequisite packages"
+    
+    & dotnet restore "$RepoRoot\test\TestPackages" --quiet --runtime "$Rid"
 
-$oldErrorAction=$ErrorActionPreference
-$ErrorActionPreference="SilentlyContinue"
-& dotnet restore "$RepoRoot\testapp" "$Rid" 2>&1 | Out-Null
-$ErrorActionPreference=$oldErrorAction
+    $oldErrorAction=$ErrorActionPreference
+    $ErrorActionPreference="SilentlyContinue"
+    & dotnet restore "$RepoRoot\testapp" "$Rid" 2>&1 | Out-Null
+    $ErrorActionPreference=$oldErrorAction
+}

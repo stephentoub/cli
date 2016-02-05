@@ -4,7 +4,7 @@ using Microsoft.DotNet.Cli.Utils;
 
 namespace Microsoft.DotNet.Tools.Compiler.Native
 {
-    public class CompileNativeCommand
+    public class CompileNativeCommandInternal
     {
         public static int Run(string[] args)
         {

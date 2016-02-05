@@ -5,7 +5,11 @@
 
 . $PSScriptRoot\..\common\_common.ps1
 
-info "Restoring Test Projects"
-
 # Restore packages
-& dotnet restore "$RepoRoot\test" -f "$TestPackageDir\Debug"
+if ($Offline){
+    header "Skipping test package restore"
+}
+else {
+    header "Restoring test packages"
+    & dotnet restore "$RepoRoot\test" -f "$TestPackageDir\Debug"
+}

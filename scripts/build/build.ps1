@@ -19,19 +19,19 @@ header "Checking Pre-Reqs"
 
 _ "$RepoRoot\scripts\test\check-prereqs.ps1"
 
-header "Restoring Tools and Packages"
+header "Restoring Tools"
 
 if ($Offline){
-    info "Skipping Tools and Packages dowlnoad: Offline build"
+    info "Skipping Tools dowlnoad: Offline build"
 }
 else {
     _ "$RepoRoot\scripts\obtain\install-tools.ps1"
-
-    # Put the stage0 on the path
-    $env:PATH = "$env:DOTNET_INSTALL_DIR\cli\bin;$env:PATH"
-
-    _ "$RepoRoot\scripts\build\restore-packages.ps1"
 }
+
+# Put the stage0 on the path
+$env:PATH = "$env:DOTNET_INSTALL_DIR\cli\bin;$env:PATH"
+
+_ "$RepoRoot\scripts\build\restore-packages.ps1"
 
 header "Compiling"
 _ "$RepoRoot\scripts\compile\compile.ps1" @("$Configuration")

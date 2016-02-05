@@ -7,7 +7,7 @@ using System.Linq;
 
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
-using Microsoft.DotNet.Tools.Compiler;
+using Microsoft.DotNet.Tools.Compiler.Native;
 
 namespace Microsoft.DotNet.Tools.Build
 {
@@ -33,7 +33,7 @@ namespace Microsoft.DotNet.Tools.Build
             }
         }
 
-        private static bool OnExecute(List<ProjectContext> contexts, CompilerCommandApp args)
+        private static bool OnExecute(List<ProjectContext> contexts, NativeCompilerCommandApp args)
         {
             var compileContexts = contexts.Select(context => new CompileContext(context, (BuilderCommandApp)args)).ToList();
 
