@@ -20,4 +20,6 @@ $REPOROOT/scripts/compile/compile-corehost.sh
 
 $REPOROOT/scripts/compile/compile-stage-1.sh
 
+$REPOROOT/scripts/build/restore-packages.sh
+
 $REPOROOT/scripts/compile/compile-stage-2.sh

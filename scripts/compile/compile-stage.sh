@@ -16,6 +16,9 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 source "$DIR/../common/_common.sh"
 
+rm -rf $OUTPUT_DIR
+mkdir -p $OUTPUT_DIR
+
 [ ! -z "$TFM" ] || die "Missing required environment variable TFM"
 [ ! -z "$RID" ] || die "Missing required environment variable RID"
 [ ! -z "$CONFIGURATION" ] || die "Missing required environment variable CONFIGURATION"
@@ -80,6 +83,21 @@ cd $OUTPUT_DIR
 find . -type f | xargs chmod 644
 $REPOROOT/scripts/build/fix-mode-flags.sh
 
+#Overwrite crossgen
+echo "Replacing CrossGen"
+CROSSGEN_FILES=( \
+    crossgen \
+    libcoreclr.dylib \
+    mscorlib.dll \
+    mscorlib.ni.dll \
+)
+
+for file in ${CROSSGEN_FILES[@]}
+do
+    cp "/Users/piotrp/code/github/jkotas/coreclr/bin/Product/OSX.x64.Release/$file" "$RUNTIME_OUTPUT_DIR/"
+    cp "/Users/piotrp/code/github/jkotas/coreclr/bin/Product/OSX.x64.Release/$file" "$OUTPUT_DIR/bin/" 
+done
+
 if [ ! -f "$OUTPUT_DIR/bin/csc.ni.exe" ]; then
     info "Crossgenning Roslyn compiler ..."
     $REPOROOT/scripts/crossgen/crossgen_roslyn.sh "$OUTPUT_DIR/bin"
@@ -102,3 +120,4 @@ fi
 COMMIT=$(git rev-parse HEAD)
 echo $COMMIT > $OUTPUT_DIR/.version
 echo $DOTNET_CLI_VERSION >> $OUTPUT_DIR/.version
+

@@ -49,20 +49,22 @@ cd $BIN_DIR
 cp $CROSSGEN_UTIL $BIN_DIR
 chmod +x crossgen
 
-./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR mscorlib.dll
+CROSSGEN_FILES=( \
+    mscorlib.dll \
+    System.Collections.Immutable.dll \
+    System.Reflection.Metadata.dll \
+    Microsoft.CodeAnalysis.dll \
+    Microsoft.CodeAnalysis.CSharp.dll \
+    Microsoft.CodeAnalysis.VisualBasic.dll \
+    csc.dll \
+    vbc.dll \
+)
 
-./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR System.Collections.Immutable.dll
+for file in ${CROSSGEN_FILES[@]}
+do
+    ./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR $file
+    info "done crossgening $file:$?"
+done
 
-./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR System.Reflection.Metadata.dll
-
-./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR Microsoft.CodeAnalysis.dll
-
-./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR Microsoft.CodeAnalysis.CSharp.dll
-
-./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR Microsoft.CodeAnalysis.VisualBasic.dll
-
-./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR csc.dll
 [ -e csc.ni.exe ] && [ ! -e csc.ni.dll ] && mv csc.ni.exe csc.ni.dll
-
-./crossgen -nologo $READYTORUN -platform_assemblies_paths $BIN_DIR vbc.dll
 [ -e vbc.ni.exe ] && [ ! -e vbc.ni.dll ] && mv vbc.ni.exe vbc.ni.dll
