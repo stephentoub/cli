@@ -94,9 +94,23 @@ CROSSGEN_FILES=( \
 
 for file in ${CROSSGEN_FILES[@]}
 do
-    cp "/Users/piotrp/code/github/jkotas/coreclr/bin/Product/OSX.x64.Release/$file" "$RUNTIME_OUTPUT_DIR/"
-    cp "/Users/piotrp/code/github/jkotas/coreclr/bin/Product/OSX.x64.Release/$file" "$OUTPUT_DIR/bin/" 
+    cp "$CoreClrDrop/$file" "$RUNTIME_OUTPUT_DIR/"
+    cp "$CoreClrDrop/$file" "$OUTPUT_DIR/bin/" 
 done
+# Always recalculate the RID because the package always uses a specific RID, regardless of OS X version or Linux distro.
+if [ "$OSNAME" == "osx" ]; then
+    RID=osx.10.10-x64
+elif [ "$OSNAME" == "ubuntu" ]; then
+    RID=ubuntu.14.04-x64
+elif [ "$OSNAME" == "centos" ]; then
+    RID=rhel.7-x64
+else
+    echo "Unknown OS: $OSNAME" 1>&2
+    exit 1
+fi
+cp "$CoreClrDrop/crossgen" "$NUGET_PACKAGES/runtime.$RID.Microsoft.NETCore.Runtime.CoreCLR/1.0.1-rc2-23805/tools/"
+cp "$CoreClrDrop/libcoreclr.dylib" "$NUGET_PACKAGES/runtime.$RID.Microsoft.NETCore.Runtime.CoreCLR/1.0.1-rc2-23805/runtimes/osx.10.10-x64/native/"
+cp "$CoreClrDrop/mscorlib.dll" "$NUGET_PACKAGES/runtime.$RID.Microsoft.NETCore.Runtime.CoreCLR/1.0.1-rc2-23805/runtimes/osx.10.10-x64/lib/dotnet/"
 
 if [ ! -f "$OUTPUT_DIR/bin/csc.ni.exe" ]; then
     info "Crossgenning Roslyn compiler ..."

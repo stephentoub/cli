@@ -15,6 +15,7 @@ source "$COMMONDIR/_prettyprint.sh"
 source "$COMMONDIR/_rid.sh"
 
 # TODO: Replace this with a dotnet generation
+export CoreClrDrop="/Users/piotrp/code/github/jkotas/coreclr/bin/Product/OSX.x64.Release"
 export SKIP_CROSSGEN=false
 export TFM=dnxcore50
 export REPOROOT=$(cd $COMMONDIR/../.. && pwd)

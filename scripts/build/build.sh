@@ -4,8 +4,6 @@
 # Licensed under the MIT license. See LICENSE file in the project root for full license information.
 #
 
-# Set OFFLINE environment variable to build offline
-
 set -e
 
 SOURCE="${BASH_SOURCE[0]}"
@@ -39,6 +37,7 @@ if [ ! -z "$OFFLINE" ]; then
     info "Skipping Tools Download: Offline build"
 else
    $REPOROOT/scripts/obtain/install-tools.sh
+   find "$REPOROOT/.dotnet_stage0" -name '*.ni.*' -delete
 fi
 
 PATH="$REPOROOT/.dotnet_stage0/$RID/bin:$PATH"
