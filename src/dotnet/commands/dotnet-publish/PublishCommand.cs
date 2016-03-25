@@ -14,6 +14,8 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.DotNet.Files;
 using Microsoft.DotNet.Tools.Common;
 using Microsoft.DotNet.ProjectModel.Utilities;
+using Microsoft.DotNet.ProjectModel.Graph;
+using NuGet.Versioning;
 
 namespace Microsoft.DotNet.Tools.Publish
 {
@@ -153,6 +155,12 @@ namespace Microsoft.DotNet.Tools.Publish
             var exporter = context.CreateExporter(configuration);
 
             var isPortable = string.IsNullOrEmpty(context.RuntimeIdentifier);
+
+            // Collect all exports and organize them
+            var exports = exporter.GetAllExports()
+                .ToDictionary(e => e.Library.Identity.Name);
+            var collectExclusionList = isPortable ? GetExclusionList(context, exports) : Enumerable.Empty<LibraryExport>();
+
             foreach (var export in exporter.GetAllExports())
             {
                 Reporter.Verbose.WriteLine($"Publishing {export.Library.Identity.ToString().Green().Bold()} ...");
@@ -196,6 +204,33 @@ namespace Microsoft.DotNet.Tools.Publish
             Reporter.Output.WriteLine($"Published to {outputPath}".Green().Bold());
 
             return true;
+        }
+
+        private IEnumerable<Tuple<string, NuGetVersion>> GetExclusionList(ProjectContext context, Dictionary<string, LibraryExport> exports)
+        {
+            var redistPackages = context.RootProject.Dependencies
+                .Where(r => r.Type.Equals(LibraryDependencyType.Platform))
+                .ToList();
+            if (redistPackages.Count > 0)
+            {
+                return Enumerable.Empty<Tuple<string, NuGetVersion>>();
+            }
+            else if (redistPackages.Count > 1)
+            {
+                throw new InvalidOperationException("Multiple packages with type: \"platform\" were specified!");
+            }
+            var redistExport = exports[redistPackages[0].Name];
+
+            var exclusionList = new List<Tuple<string, NuGetVersion>>();
+            exclusionList.Add(Tuple.Create(redistExport.Library.Identity.Name, redistExport.Library.Identity.Version));
+            CollectDependencies(exports, redistExport.Library.Dependencies, exclusionList);
+        }
+
+        private void CollectDependencies(Dictionary<string, LibraryExport> exports, IEnumerable<LibraryRange> dependencies, List<Tuple<string, NuGetVersion>> exclusionList)
+        {
+            foreach (var dependency in dependencies)
+            {
+            }
         }
 
         private static void PublishRefs(LibraryExport export, string outputPath)
