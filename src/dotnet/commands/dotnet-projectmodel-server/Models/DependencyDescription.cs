@@ -23,6 +23,8 @@ namespace Microsoft.DotNet.ProjectModel.Server.Models
         public string Type { get; private set; }
 
         public bool Resolved { get; private set; }
+        
+        public string MSBuildProjectPath { get; private set; }
 
         public IEnumerable<DependencyItem> Dependencies { get; private set; }
 
@@ -56,7 +58,7 @@ namespace Microsoft.DotNet.ProjectModel.Server.Models
                                                    List<DiagnosticMessage> diagnostics,
                                                    IDictionary<string, LibraryExport> exportsLookup)
         {
-            return new DependencyDescription
+            var result = new DependencyDescription
             {
                 Name = library.Identity.Name,
                 DisplayName = library.Identity.Name,
@@ -70,6 +72,14 @@ namespace Microsoft.DotNet.ProjectModel.Server.Models
                 Warnings = diagnostics.Where(d => d.Severity == DiagnosticMessageSeverity.Warning)
                                       .Select(d => new DiagnosticMessageView(d))
             };
+            
+            var msbuildProjectDescription = library as MSBuildProjectDescription;
+            if (msbuildProjectDescription != null)
+            {
+                result.MSBuildProjectPath = msbuildProjectDescription.ProjectLibrary.MSBuildProject;
+            }
+            
+            return result;
         }
 
         private static DependencyItem GetDependencyItem(LibraryRange dependency,

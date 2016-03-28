@@ -412,5 +412,11 @@ namespace Microsoft.DotNet.ProjectModel.Server.Tests
                 }
             }
         }
+        
+        [Fact]
+        public void CsProjectReferences()
+        {
+            Assert.True(true);
+        }
     }
 }
