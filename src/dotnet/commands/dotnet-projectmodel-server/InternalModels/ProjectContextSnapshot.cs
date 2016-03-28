@@ -8,6 +8,7 @@ using Microsoft.DotNet.ProjectModel.Server.Helpers;
 using Microsoft.DotNet.ProjectModel.Server.Models;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using NuGet.Frameworks;
+using Microsoft.DotNet.ProjectModel.Graph;
 
 namespace Microsoft.DotNet.ProjectModel.Server
 {
@@ -50,15 +51,13 @@ namespace Microsoft.DotNet.ProjectModel.Server
                 var description = DependencyDescription.Create(export.Library, diagnostics, allExports);
                 allDependencies[description.Name] = description;
 
-                var projectDescription = export.Library as ProjectDescription;
-                if (projectDescription != null)
+                var projectReferene = ProjectReferenceDescription.Create(export.Library);
+                if (projectReferene != null && export.Library.Identity.Name != context.ProjectFile.Name)
                 {
-                    if (projectDescription.Identity.Name != context.ProjectFile.Name)
-                    { 
-                        allProjectReferences.Add(ProjectReferenceDescription.Create(projectDescription));
-                    }
+                    allProjectReferences.Add(projectReferene);
                 }
-                else
+                
+                if (export.Library.Identity.Type != LibraryType.Project)
                 {
                     allFileReferences.AddRange(export.CompilationAssemblies.Select(asset => asset.ResolvedPath));
                 }

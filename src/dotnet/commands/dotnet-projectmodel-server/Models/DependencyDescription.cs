@@ -10,7 +10,7 @@ namespace Microsoft.DotNet.ProjectModel.Server.Models
 {
     public class DependencyDescription
     {
-        private DependencyDescription() { }
+        protected DependencyDescription() { }
 
         public string Name { get; private set; }
 
@@ -73,10 +73,10 @@ namespace Microsoft.DotNet.ProjectModel.Server.Models
                                       .Select(d => new DiagnosticMessageView(d))
             };
             
-            var msbuildProjectDescription = library as MSBuildProjectDescription;
-            if (msbuildProjectDescription != null)
+            var msbuildLibrary = library as MSBuildProjectDescription;
+            if (msbuildLibrary != null)
             {
-                result.MSBuildProjectPath = msbuildProjectDescription.ProjectLibrary.MSBuildProject;
+                result.MSBuildProjectPath = msbuildLibrary.ProjectLibrary.MSBuildProject;
             }
             
             return result;
